@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>index</title>
+  <script type='importmap'>
+      {
+        "imports": {
+          "go": "./wasm_exec.js",
+          "@taybart/corvid": "https://unpkg.com/@taybart/corvid@latest"
+        }
+      }
+  </script>
+  <script type='module' src="index.js"></script>
+</head>
+
+<body>
+  <form id="input">
+    <input type="text" id="args">
+    <select id="tools"></select>
+    <button type="submit">Submit</button>
+  </form>
+  <p>Output: <br><span id="output"></span></p>
+</body>
+
+</html>
