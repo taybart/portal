@@ -12,12 +12,20 @@
       }
   </script>
   <script type='module' src="index.js"></script>
+  <style>
+    #args {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+    }
+  </style>
 </head>
 
 <body>
   <form id="input">
-    <input type="text" id="args">
     <select id="tools"></select>
+    <!-- <input type="text" id="stdin" /> -->
+    <div id="args"></div>
     <button type="submit">Submit</button>
   </form>
   <p>Output: <br><span id="output"></span></p>

@@ -1,0 +1,26 @@
+[
+  {
+    "short": "d",
+    "long": "diff",
+    "required": false,
+    "help": "print difference to now (ex. 3min from now/2 days ago)",
+    "example": "3min from now/2 days ago",
+    "type": "string"
+  },
+  {
+    "short": "ts",
+    "long": "timestamp",
+    "required": false,
+    "help": "RFC3339 timestamp to convert to a unix timestamp",
+    "example": "RFC3339 timestamp",
+    "type": "string"
+  },
+  {
+    "short": "u",
+    "long": "unix",
+    "required": false,
+    "help": "unix timestamp to convert",
+    "example": "unix timestamp",
+    "type": "string"
+  }
+]
