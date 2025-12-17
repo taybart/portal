@@ -1,0 +1,32 @@
+locals {
+  url = env("LLM_URI")
+}
+request "list models" {
+  url =  "https://${locals.url}/api/tags"
+  method = "GET"
+  after = <<LUA
+    local body = json.decode(rest.res.body)
+    for _, model in ipairs(body.models) do
+    inspect.print(model.model)
+    end
+  LUA
+}
+
+locals {
+  prompt = "Llamas are members of the camelid family"
+}
+
+request "generate" {
+  url =  "https://${locals.url}/api/generate"
+  method = "POST"
+  body = {
+    prompt: locals.prompt,
+    model: "qwen3:8b",
+    stream: false,
+    think: false
+  }
+  after = <<LUA
+    local body = json.decode(rest.res.body)
+    print(body.response)
+  LUA
+}

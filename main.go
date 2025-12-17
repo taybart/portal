@@ -61,7 +61,7 @@ func (c Client) generate(helpMsg string) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", "https://llm.bbl.systems/api/generate", bytes.NewReader(b))
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s/api/generate", os.Getenv("LLM_URI")), bytes.NewReader(b))
 	if err != nil {
 		return err
 	}
