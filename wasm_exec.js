@@ -10,6 +10,9 @@
     err.code = "ENOSYS"
     return err
   }
+  if (!globalThis.wasmOutput) {
+    globalThis.wasmOutput = ""
+  }
 
   if (!globalThis.fs) {
     let outputBuf = ""
@@ -27,7 +30,7 @@
         outputBuf += decoder.decode(buf)
         const nl = outputBuf.lastIndexOf("\n")
         if (nl != -1) {
-          globalThis.wasmOutput = outputBuf.substring(0, nl)
+          globalThis.wasmOutput += outputBuf.substring(0, nl) + "\n"
           // console.log(outputBuf.substring(0, nl));
           outputBuf = outputBuf.substring(nl + 1)
         }
