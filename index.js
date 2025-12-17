@@ -1,8 +1,10 @@
 import { dom } from "@taybart/corvid"
 import "go"
+const Go = globalThis.Go
+
 const el = dom.el
 
-let tools = {
+const tools = {
   unscrambled: {},
   "unix-timestamp": {},
 }
@@ -21,6 +23,47 @@ function makeArgs(values) {
   return ret
 }
 
+async function loadWasmModules() {
+  await Promise.allSettled(
+    Object.entries(tools).map(async ([name, tool]) => {
+      try {
+        const response = await fetch(`tools/${name}/main.wasm`)
+        tool.exe = await response.arrayBuffer()
+      } catch (err) {
+        throw new Error(`Failed to load WASM for ${tool}: ${err}`)
+      }
+    }),
+  )
+}
+async function loadArgs() {
+  await Promise.allSettled(
+    Object.entries(tools).map(async ([name, tool]) => {
+      try {
+        const response = await fetch(`tools/${name}/args.json`)
+        tool.args = await response.json()
+      } catch (err) {
+        tool.args = []
+      } finally {
+        tool.args.push({ long: "__stdin" })
+      }
+    }),
+  )
+}
+
+async function addArgs(toolArgs) {
+  const args = new el("#args").empty()
+
+  const add = (arg) => {
+    const label = new el({ type: "label", parent: args, content: arg.long })
+    const input = new el({ type: "input", parent: label })
+    // replace with tooltip of arg.help
+    input.el.type = "text"
+    input.el.name = arg.long || arg.short
+    input.el.placeholder = arg.help
+  }
+  toolArgs.forEach(add)
+}
+
 async function submit(ev) {
   ev.preventDefault()
   const form = new el("#input")
@@ -30,9 +73,6 @@ async function submit(ev) {
 
   const formData = Object.fromEntries(new FormData(form.el))
 
-  let logoutput = ""
-
-  const ogLog = console.log
   try {
     const go = new Go()
     go.argv.push(...makeArgs(formData))
@@ -42,58 +82,19 @@ async function submit(ev) {
       throw new Error(`No WASM for ${toolname.value()}`)
     }
     const wasmModule = await WebAssembly.instantiate(exe, go.importObject)
-    console.log = function (...args) {
-      logoutput += args.join(" ") + "\n"
-      // log.apply(console, args);
-    }
     await go.run(wasmModule.instance)
 
-    output.content(logoutput.replace(/\n/g, "<br>"))
+    console.log("output:", globalThis.wasmOutput)
+    if (!globalThis.wasmOutput) {
+      output.content("Done")
+      return
+    }
+    output.content(globalThis.wasmOutput.replace(/\n/g, "<br>"))
+    globalThis.wasmOutput = ""
   } catch (err) {
     console.error(`WASM error: ${err}`)
     output.content(`Error: ${err.message}`)
-  } finally {
-    console.log = ogLog
   }
-}
-
-// Load WASM bytes once on page load
-async function loadWasmModules() {
-  for (let tool in tools) {
-    try {
-      let response = await fetch(`tools/${tool}/main.wasm`)
-      tools[tool].exe = await response.arrayBuffer()
-      response = await fetch(`tools/${tool}/args.json`)
-      tools[tool].args = await response.json()
-      tools[tool].args.push({
-        long: "__stdin",
-        short: "__stdin",
-        help: "stdin",
-        example: "stdin",
-      })
-    } catch (err) {
-      throw new Error(`Failed to load WASM for ${tool}: ${err}`)
-    }
-  }
-}
-
-async function addArgs(toolArgs) {
-  const args = new el("#args").empty()
-  // const stdin = new el("#stdin")
-  // if (Object.keys(toolArgs).length === 0) {
-  //   // stdin.style({ display: "block" })
-  //
-  //   return
-  // }
-  // stdin.style({ display: "none" })
-
-  toolArgs.forEach((arg) => {
-    const label = new el({ type: "label", parent: args, content: arg.long })
-    const input = new el({ type: "input", parent: label })
-    // replace with tooltip of arg.help
-    input.el.name = arg.long || arg.short
-    input.el.placeholder = arg.example
-  })
 }
 
 dom.ready(() => {
@@ -103,15 +104,14 @@ dom.ready(() => {
     new el({ type: "option", parent: t, content: tool }).value(tool)
   }
   t.value("unix-timestamp")
+  t.on("change", (ev) => {
+    addArgs(tools[ev.target.value].args)
+  })
 
   loadWasmModules()
+  loadArgs()
     .then(() => {
       addArgs(tools[t.value()].args)
     })
     .catch((err) => console.error(err))
-  t.on("change", (ev) => {
-    const args = tools[ev.target.value].args
-    addArgs(args)
-    // console.log(args)
-  })
 });

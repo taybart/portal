@@ -2,7 +2,12 @@
 <html>
 
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon.ico" />
   <title>index</title>
+  <link rel="stylesheet" href="/assets/style/bundle.css">
   <script type='importmap'>
       {
         "imports": {
@@ -12,23 +17,60 @@
       }
   </script>
   <script type='module' src="index.js"></script>
+  <script type='module'>
+    import {style} from '@taybart/corvid'
+    style.handleThemeSwitch()
+  </script>
   <style>
+    body {
+      max-width: 100vw;
+      margin: 2em;
+    }
+
     #args {
       display: flex;
       flex-direction: column;
       align-items: start;
     }
+
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    @media (width >=48rem) {
+      .container {
+        flex-direction: row;
+      }
+    }
+
+    .output {
+      width: 60%;
+      height: 60%;
+      margin-left: 2em;
+      border: 1px solid var(--fg-color);
+    }
+
+    #run {
+      margin-top: 1em;
+      width: 100%;
+      max-width: 20em;
+    }
   </style>
 </head>
 
 <body>
-  <form id="input">
-    <select id="tools"></select>
-    <!-- <input type="text" id="stdin" /> -->
-    <div id="args"></div>
-    <button type="submit">Submit</button>
-  </form>
-  <p>Output: <br><span id="output"></span></p>
+  <div class="container">
+    <form id="input">
+      <div class="select"> <select id="tools"></select> </div>
+      <!-- <input type="text" id="stdin" /> -->
+      <div id="args"></div>
+      <button id="run" type="submit">Submit</button>
+    </form>
+    <p class="output">Output: <br><span id="output"></span></p>
+  </div>
 </body>
 
 </html>

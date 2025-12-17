@@ -1,0 +1,6 @@
+server {
+  address = "0.0.0.0:18080"
+  directory = "."
+  quiet = true
+  cors = true
+}
