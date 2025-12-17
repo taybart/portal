@@ -8,18 +8,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="apple-touch-icon" href="/assets/img/favicon.ico" />
   <link rel="icon" type="image/png" href="/assets/img/favicon.ico" />
-  <link rel="stylesheet" href="/assets/style/bundle.css">
+  <link preload rel="stylesheet" href="/assets/style/bundle.css">
   <script type='importmap'>
       {
         "imports": {
-          "go": "./wasm_exec.js",
-          "@taybart/corvid": "https://unpkg.com/@taybart/corvid@latest"
+          "go": "./assets/js/wasm_exec.js",
+          "@taybart/corvid": "./assets/js/corvid/index.js",
+          "@taybart/corvid/dom": "./assets/js/corvid/dom.js",
+          "@taybart/corvid/style": "./assets/js/corvid/style.js"
         }
       }
-  </script>
-  <script type='module'>
-    import {style} from '@taybart/corvid'
-    style.handleThemeSwitch()
   </script>
   <script type='module' src="index.js"></script>
   <style>
@@ -63,6 +61,11 @@
 </head>
 
 <body>
+  <script type='module'>
+    import {handleThemeSwitch} from '@taybart/corvid/style'
+    console.log('hi')
+    handleThemeSwitch()
+  </script>
   <div class="container">
     <form id="input">
       <div class="select"> <select id="tools"></select> </div>

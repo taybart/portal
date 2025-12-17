@@ -1,6 +1,5 @@
-import { dom } from "@taybart/corvid"
-import "go"
-const Go = globalThis.Go
+import dom from "@taybart/corvid/dom"
+import { Go } from "go"
 
 const el = dom.el
 
@@ -84,7 +83,7 @@ async function submit(ev) {
     const wasmModule = await WebAssembly.instantiate(exe, go.importObject)
     await go.run(wasmModule.instance)
 
-    console.log("output:", globalThis.wasmOutput)
+    // console.log("output:", globalThis.wasmOutput)
     if (!globalThis.wasmOutput) {
       output.content("Done")
       return

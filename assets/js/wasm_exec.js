@@ -684,4 +684,8 @@
       }
     }
   }
-})();
+})()
+
+const Go = globalThis.Go
+
+export { Go };
